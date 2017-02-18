@@ -1,9 +1,6 @@
 from collections import Sequence, Callable, deque
 from weakref import WeakValueDictionary
 
-def id_func(x):
-    return x
-
 class LazySequence(Sequence):
     """ A Sequence that lazily calculates values when needed
     based on an underlying Sequence of values and a map function.
