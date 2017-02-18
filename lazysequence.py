@@ -11,7 +11,7 @@ class LazySequence(Sequence):
     maintain a cache of both recently used values and all other
     values that have not yet been garbage collected.
     """
-    _ref_lru = deque(maxlen=10000)
+    _ref_lru = deque(maxlen=1000)
 
     def __init__(self, seq=(), map_func=None):
         if map_func is not None and not isinstance(map_func, Callable):
@@ -22,22 +22,16 @@ class LazySequence(Sequence):
             self._base_seq = seq._base_seq
             self._base_range = seq._base_range
             self._weakref_cache = WeakValueDictionary()
-
             self._map_funcs.extend(seq._map_funcs)
-            if map_func is not None:
-                self._map_funcs.append(map_func)
-
         elif isinstance(seq, Sequence):
             self._base_seq = seq
             self._base_range = range(len(seq))
             self._weakref_cache = WeakValueDictionary()
-
-            if map_func is None:
-                map_func = id_func
-            self._map_funcs.append(map_func)
-
         else:
             raise ValueError('LazySequence: seq must be a true sequence.')
+
+        if map_func is not None:
+            self._map_funcs.append(map_func)
 
     def __len__(self):
         return len(self._base_range)
